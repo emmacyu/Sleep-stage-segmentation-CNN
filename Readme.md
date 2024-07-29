@@ -17,9 +17,13 @@ Both the source code and the datasets are provided to foster future research in 
 
 **SRC**: The src/ directory contains all the scripts and implementations of the experiments in the project. Each process is organized into separate files for clarity and modularity.
 
-- data preparation
-- models  
-- run.py  
+- data_generator.py: used for data preparation
+- models:
+  |- base_model.py
+  |- cnn1head.py: extends base_model
+  |- cnn3head.py: extends base_model
+  |- cnn3head_lstm.py: extends base_model
+- run.py: run the experiments
 
 **Data**: The data/ directory includes the inputs (e.g., the EEG data) and outputs (e.g., saved models).
 
