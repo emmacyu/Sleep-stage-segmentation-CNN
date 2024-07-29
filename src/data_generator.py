@@ -1,3 +1,4 @@
+# import the necessary packages
 import functools
 from pathlib import Path
 import numpy as np
@@ -6,6 +7,9 @@ from sklearn.model_selection import train_test_split
 
 
 def rescale_array(X):
+    '''
+    normalize the input
+    '''
     X = X / 20
     X = np.clip(X, -5, 5)
     return X
@@ -13,11 +17,17 @@ def rescale_array(X):
 
 class DataGenerator(Sequence):
     def __init__(self, file_list, batch_size=32):
+        '''
+        initialization
+        '''
         self.file_list = file_list
         self.idx_file_mapping, self.num_samples = self._create_idx_file_mapping()
         self.batch_size = batch_size
 
     def _create_idx_file_mapping(self):
+        '''
+        create index and file mapping
+        '''
         count = 0
         mapping = {}
         for file_path in self.file_list:
@@ -28,6 +38,9 @@ class DataGenerator(Sequence):
         return mapping, count
 
     def _find_file_path(self, idx):
+        '''
+        locate the file
+        '''
         for idx_range, file_path in self.idx_file_mapping.items():
             start, end = idx_range
             if start <= idx and idx <= end:
@@ -35,14 +48,23 @@ class DataGenerator(Sequence):
                 return (in_file_idx, file_path)
 
     def __len__(self):
+        '''
+        get number of batches
+        '''
         return int(np.ceil(self.num_samples / self.batch_size))
 
     @functools.lru_cache(maxsize=128)
     def _read_file(self, file_path):
+        ''' 
+        load the file
+        '''
         with np.load(file_path) as d:
             return d['x'], d['y']
 
     def __getitem__(self, idx):
+        '''
+        getters
+        '''
         in_file_idx, file_path = self._find_file_path(idx)
         X, y = self._read_file(file_path)
         # y = to_categorical(y,5)
@@ -55,6 +77,9 @@ class DataGenerator(Sequence):
 
 class SeqDataGenerator(Sequence):
     def __init__(self, file_list, batch_size=4, time_steps=10):
+        '''
+        initialization of necessary parameters
+        '''
         self.file_list = file_list
         self.time_steps = time_steps
         self.batch_size = batch_size
@@ -64,6 +89,9 @@ class SeqDataGenerator(Sequence):
         print(f'num batches:{self.num_batches}')
 
     def _create_idx_file_mapping(self):
+        '''
+        create index and file mapping
+        '''
         count = 0
         mapping = {}
         for file_path in self.file_list:
@@ -80,6 +108,9 @@ class SeqDataGenerator(Sequence):
         return mapping, count
 
     def _find_file_path(self, idx):
+        '''
+        locate the file
+        '''
         for idx_range, file_path in self.idx_file_mapping.items():
             start, end = idx_range
             if start <= idx and idx < end:
@@ -87,15 +118,24 @@ class SeqDataGenerator(Sequence):
                 return (in_file_idx, file_path)
 
     def __len__(self):
+        '''
+        get number of batches
+        '''
         return self.num_batches
         # return int(np.floor(self.num_samples / (self.batch_size*self.time_steps))
 
     @functools.lru_cache(maxsize=128)
     def _read_file(self, file_path):
+        ''' 
+        load the file
+        '''
         with np.load(file_path) as d:
             return d['x'], d['y']
 
     def __getitem__(self, idx):
+        '''
+        getters
+        '''
         in_file_idx, file_path = self._find_file_path(idx)
         X, y = self._read_file(file_path)
         ind0 = in_file_idx * (self.batch_size * self.time_steps)
@@ -120,6 +160,9 @@ class SeqDataGenerator(Sequence):
 
 class SeqOneOutGenerateor(Sequence):
     def __init__(self, file_list, batch_size=4, time_steps=10):
+        '''
+        initialization of necessary parameters
+        '''
         self.file_list = file_list
         self.time_steps = time_steps
         self.batch_size = batch_size
@@ -129,6 +172,10 @@ class SeqOneOutGenerateor(Sequence):
         print(f'num batches:{self.num_batches}')
 
     def _create_idx_file_mapping(self):
+        '''
+        create index and file mapping
+        '''
+        count
         count = 0
         mapping = {}
         for file_path in self.file_list:
@@ -145,6 +192,9 @@ class SeqOneOutGenerateor(Sequence):
         return mapping, count
 
     def _find_file_path(self, idx):
+        '''
+        locate the file
+        '''
         for idx_range, file_path in self.idx_file_mapping.items():
             start, end = idx_range
             if start <= idx and idx < end:
@@ -152,15 +202,24 @@ class SeqOneOutGenerateor(Sequence):
                 return (in_file_idx, file_path)
 
     def __len__(self):
+        '''
+        get number of batches
+        '''
         return self.num_batches
         # return int(np.floor(self.num_samples / (self.batch_size*self.time_steps))
 
     @functools.lru_cache(maxsize=128)
     def _read_file(self, file_path):
+        ''' 
+        load the file
+        '''
         with np.load(file_path) as d:
             return d['x'], d['y']
 
     def __getitem__(self, idx):
+        '''
+        getters
+        '''
         in_file_idx, file_path = self._find_file_path(idx)
         X, y = self._read_file(file_path)
         ind0 = in_file_idx * (self.batch_size * self.time_steps)
@@ -185,6 +244,10 @@ class SeqOneOutGenerateor(Sequence):
 
 
 def create_dataset(data_files):
+    '''
+    split data into small sample frames
+    As the sample size is 30s and frequency is 100Hz, the the length for each sample frame will be 3000
+    '''
     Xs = np.empty([0, 3000, 1])
     ys = np.empty([0, ])
     for dfile in data_files:
@@ -199,6 +262,9 @@ def create_dataset(data_files):
 
 
 def prepare_train_test(data_dir=Path(r'..\data\eeg_fpz_cz')):
+    '''
+    split the train, valid and test datasets
+    '''
     print('start')
     data_files = list(data_dir.glob('*.npz'))
     print(f'number of data files: {len(data_files)}')
@@ -209,6 +275,9 @@ def prepare_train_test(data_dir=Path(r'..\data\eeg_fpz_cz')):
 
 
 if __name__ == "__main__":
+    '''
+    this main class is used for testing purpuses
+    '''
     print('start')
     train, val, test = prepare_train_test()
     print(len(train))
