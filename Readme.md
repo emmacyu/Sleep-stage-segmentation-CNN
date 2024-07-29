@@ -23,6 +23,8 @@ Both the source code and the datasets are provided to foster future research in 
 
 **Data**: The data/ directory includes the inputs (e.g., the EEG data) and outputs (e.g., saved models).
 
+**Docs**: The docs/ directory includes the documentation information related to this project.
+
 ### Set up
 
 #### Prerequisites
