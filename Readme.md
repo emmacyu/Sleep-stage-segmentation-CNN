@@ -1,5 +1,4 @@
-For more detailed information, please 
-[Click here to view the live document](https://emmacyu.github.io/Sleep-stage-segmentation-CNN/)
+[Pleae click here to view the live document](https://emmacyu.github.io/Sleep-stage-segmentation-CNN/)
 
 ### Abstract
 
